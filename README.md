@@ -4,6 +4,11 @@
 
 An image is available at [Docker Hub - theodson/postgres-murmur](https://hub.docker.com/repository/docker/theodson/postgres-murmur/tags)
 
+## Build
+
+```bash
+dockerid="yourid/" ./build.sh
+```
 
 ## Publish
 
@@ -14,6 +19,9 @@ docker login
 
 # Prepare and Tag local image for the DockerHub repository.
 docker tag postgres-murmur theodson/postgres-murmur:9.5.14
+# OR
+docker tag postgres-murmur:9.5.14 theodson/postgres-murmur:9.5.14
+
 
 # Push to Docker Hub
 

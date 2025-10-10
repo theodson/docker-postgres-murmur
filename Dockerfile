@@ -14,7 +14,8 @@ RUN rm /etc/apt/sources.list.d/pgdg.list \
 
 RUN apt update && apt install -y wget
 
-RUN wget -qO- https://github.com/bgdevlab/pghashlib/blob/bgdevlab/builds/builds/ubuntu/postgresql95-hashlib.ubuntu_20.tar.gz?raw=true >/tmp/postgresql95-hashlib.ubuntu_20.tar.gz
+# get the correct archtecture X86 or Apple Silicon
+RUN wget -qO- https://github.com/bgdevlab/pghashlib/blob/bgdevlab/builds/builds/ubuntu/postgresql95-hashlib.$(uname -m)-ubuntu_20.tar.gz?raw=true >/tmp/postgresql95-hashlib.ubuntu_20.tar.gz
 
 # install pre-compiled hashlib postgresql extension.
 RUN tar -xf /tmp/postgresql95-hashlib.ubuntu_20.tar.gz -C /tmp/ \
