@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # you may want to set the env dockerid="yourid/"
 test -z "${dockerid}" && {
   echo "set dockerid ENV"
@@ -14,7 +16,7 @@ if test $(uname -m) = 'arm64'; then
 else
   # build in Intel environment
   dockertag="${dockerid}postgres-murmur:9.5.14"
-  docker build --no-cache -t ${dockerid}postgres-murmur:9.5.14 -f Dockerfile .
+  docker build --no-cache -t "$dockertag" -f Dockerfile .
 fi
 
 echo Finished Docker build, tagged with $dockertag
