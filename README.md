@@ -6,8 +6,30 @@ An image is available at [Docker Hub - theodson/postgres-murmur](https://hub.doc
 
 ## Build
 
+## Build
+
+**Prerequisites**
+
+- Docker 24+ with Buildx
+- logged in to Docker Hub if pushing.
+
+**Build locally** (when archives are reachable)
+
+Build both architectures, create a manifest and publish to Docker Hub with `build.sh`:
+
+>  Note: building for a different architecture is supported regardless of the host/build machines architevture/platform.
+
 ```bash
-dockerid="yourid/" ./build.sh
+# Optional: override defaults
+export DOCKERID="theodson/" # your Docker Hub namespace
+
+# Authenticate for your Docker Hub account
+docker login
+
+# Build both architectures (pushes images tagged with :${TAG}-amd64 and :${TAG}-arm64)
+./build.sh build
+./build.sh push
+./build.sh publish
 ```
 
 ## Publish
@@ -17,15 +39,8 @@ This was published using the following commands
 # Authenticate for your DockerHub account
 docker login
 
-# Prepare and Tag local image for the DockerHub repository.
-docker tag postgres-murmur theodson/postgres-murmur:9.5.14
-# OR
-docker tag postgres-murmur:9.5.14 theodson/postgres-murmur:9.5.14
-
-
-# Push to Docker Hub
-
-docker push theodson/postgres-murmur:9.5.14
+# Assuming images are built and pushed (see previous examples)
+./build.sh publish
 ```
 
 ## Docker Compose 
@@ -39,7 +54,7 @@ services:
 #        build:
 #            context: './docker/pgsql'
 #            dockerfile: Dockerfile
-        image: 'postgres-murmur:9.5.14'
+        image: 'postgres-murmur:9.5'
         ports:
             - '${FORWARD_DB_PORT:-5439}:5432'
         environment:
