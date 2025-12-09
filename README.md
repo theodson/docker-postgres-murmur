@@ -1,10 +1,8 @@
 # Postgres with Murmur3 Hashlib extension `postgres-murmur`
 
-- Based standard Postgres image
+- Based on the standard Postgres image
 
 An image is available at [Docker Hub - theodson/postgres-murmur](https://hub.docker.com/repository/docker/theodson/postgres-murmur/tags)
-
-## Build
 
 ## Build
 
@@ -25,6 +23,9 @@ export DOCKERID="theodson/" # your Docker Hub namespace
 
 # Authenticate for your Docker Hub account
 docker login
+
+# What version of Postgres to build (TAG is based on POSTGRES_VERSION)
+export POSTGRES_VERSION=15
 
 # Build both architectures (pushes images tagged with :${TAG}-amd64 and :${TAG}-arm64)
 ./build.sh build
