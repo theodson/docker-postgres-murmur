@@ -32,6 +32,15 @@ docker login
 ./build.sh publish
 ```
 
+or target a single architecture:
+```bash
+# Build a single architecture tagged with :${VERSION}-arm64 (15-arm64)
+DOCKERID=theodson POSTGRES_VERSION=15 ./build.sh build_arm64
+
+# Build and push a single architecture tagged with :${VERSION}-arm64 (18-arm64)
+DOCKERID=theodson POSTGRES_VERSION=18 ./build.sh push_arm64
+```
+
 ## Publish
 
 This was published using the following commands
@@ -78,4 +87,12 @@ services:
                 - '${DB_USERNAME}'
             retries: 3
             timeout: 5s
+```
+
+Check 
+```bash
+
+# check hashlib is installed using commands
+psql -U postgres -c 'CREATE EXTENSION hashlib;'
+psql -U postgres -t -c "select encode(hash128_string('abcdefg', 'murmur3'), 'hex');" | xargs | grep '069b3c88000000000000000000000000'
 ```

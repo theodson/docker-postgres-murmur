@@ -16,12 +16,12 @@ RUN rm /etc/apt/sources.list.d/pgdg.list \
 
 RUN apt update && apt install -y wget file
 
-RUN wget -qO- https://github.com/bgdevlab/pghashlib/blob/bgdevlab/builds/builds/ubuntu/postgresql95-hashlib.aarch64-ubuntu_20.tar.gz?raw=true >/tmp/postgresql95-hashlib.arm64.tar.gz
+RUN wget -qO- https://github.com/bgdevlab/pghashlib/blob/bgdevlab/builds/builds/ubuntu/postgresql95-hashlib.x86_64.tar.gz?raw=true >/tmp/postgresql95-hashlib.x86_64.tar.gz
 
 # install pre-compiled hashlib postgresql extension.
-RUN tar -xf /tmp/postgresql95-hashlib.arm64.tar.gz -C /tmp/ \
-    && mv /tmp/pghashlib_9.5-ubuntu_20 /tmp/pghashlib_9.5-arm64 \
-    && cd /tmp/pghashlib_9.5-arm64/ \
+RUN tar -xf /tmp/postgresql95-hashlib.x86_64.tar.gz -C /tmp/ \
+    && mv /tmp/pghashlib_9.5-ubuntu_20 /tmp/pghashlib_9.5-x86_64 \
+    && cd /tmp/pghashlib_9.5-x86_64/ \
     && cp hashlib.so /usr/lib/postgresql/9.5/lib \
     && cp hashlib.control /usr/share/postgresql/9.5/extension/ \
     && cp sql/*.sql /usr/share/postgresql/9.5/extension/
