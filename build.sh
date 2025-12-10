@@ -2,17 +2,21 @@
 
 set -euo pipefail
 
-
 # you may want to set the env DOCKERID="yourGitHubOrDockerHubId/"
 test -z "${DOCKERID}" && {
   echo "set DOCKERID ENV - should end with /"
   exit 1
 }
 [[ "${DOCKERID}" != */ ]] && DOCKERID="${DOCKERID}/"
-export POSTGRES_VERSION=9.5
+export POSTGRES_VERSION=${POSTGRES_VERSION:-9.5}
 export PLATFORM="${PLATFORM:-$(uname -m)}" # arm64, amd64 or all
 export ACTION="${1:-build_$PLATFORM}" # build_arm64, build_amd64
 export BUILD_ARGS=" --no-cache "
+export DOCKERFILE="$POSTGRES_VERSION/$PLATFORM/Dockerfile"
+
+echo "POSTGRES_VERSION  = $POSTGRES_VERSION"
+echo "DOCKERFILE        = $DOCKERFILE"
+echo "ACTION            = $ACTION"
 
 # Build and publish a multi-platform (amd64 + arm64) Docker image
 # Final image tag: $DOCKERID/postgres-murmur:$POSTGRES_VERSION, e.g. theodson/postgres-murmur:9.5
@@ -41,7 +45,7 @@ build_amd64() {
     --provenance=false \
     --sbom=false \
     -t "$AMD_TAG" \
-    -f amd64/Dockerfile \
+    -f $DOCKERFILE \
     $1 \
     .
 }
@@ -53,7 +57,7 @@ build_arm64() {
     --provenance=false \
     --sbom=false \
     -t "$ARM_TAG" \
-    -f arm64/Dockerfile \
+    -f $DOCKERFILE \
     $1 \
     .
 }
@@ -77,8 +81,8 @@ resolve_platform_digest() {
 
 publish() {
   # Resolve platform manifest digests
-  AMD_MANIFEST_DIGEST=$(resolve_platform_digest "$AMD_TAG" "amd64" | head -n1 | tr -d '\n')
-  ARM_MANIFEST_DIGEST=$(resolve_platform_digest "$ARM_TAG" "arm64" | head -n1 | tr -d '\n')
+  AMD_MANIFEST_DIGEST=$(resolve_platform_digest "$AMD_TAG" "$TAG/amd64" | head -n1 | tr -d '\n')
+  ARM_MANIFEST_DIGEST=$(resolve_platform_digest "$ARM_TAG" "$TAG/arm64" | head -n1 | tr -d '\n')
 
   # Fallback: if parsing failed (e.g., single-manifest image without a Manifests list),
   # use the top-level Digest from imagetools (acceptable when tag is already a single image manifest)
@@ -110,8 +114,8 @@ publish() {
     "$IMAGE@${AMD_MANIFEST_DIGEST}" \
     "$IMAGE@${ARM_MANIFEST_DIGEST}"
 
-  docker manifest annotate "$FINAL_TAG" "$IMAGE@${AMD_MANIFEST_DIGEST}" --os linux --arch amd64
-  docker manifest annotate "$FINAL_TAG" "$IMAGE@${ARM_MANIFEST_DIGEST}" --os linux --arch arm64
+  docker manifest annotate "$FINAL_TAG" "$IMAGE@${AMD_MANIFEST_DIGEST}" --os linux --arch $TAG/amd64
+  docker manifest annotate "$FINAL_TAG" "$IMAGE@${ARM_MANIFEST_DIGEST}" --os linux --arch $TAG/arm64
 
   docker manifest push "$FINAL_TAG"
 
@@ -160,7 +164,7 @@ case "${ACTION}" in
   build_amd64 "--push"
   ;;
 'publish')
-# publish all arm64 and amd64
+  # publish all arm64 and amd64
   publish
   ;;
 esac
